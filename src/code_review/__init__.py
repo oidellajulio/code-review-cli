@@ -328,5 +328,8 @@ def init(
     console.print(f"Script: [cyan]{script_path.relative_to(root_path)}[/cyan]")
     console.print(f"Prompt: [cyan]{prompt_path.relative_to(root_path)}[/cyan]")
 
-if __name__ == "__main__":
+def main():
     app()
+
+if __name__ == "__main__":
+    main()
