@@ -190,32 +190,90 @@ catch {
 }
 """
 
-PROMPT_CONTENT = """---
-description: Faz uma revisão de código para as alterações fornecidas, garantindo qualidade, consistência e aderência às melhores práticas.
+PROMPT_CONTENT_TEMPLATE = """---
+description: Realiza uma revisão de código detalhada e construtiva com base em um diff de git.
+tags: [code-review, git, quality, best-practices]
 ---
 
-## User Input
+## Objetivo
+Você é um Engenheiro de Software Sênior especializado em revisão de código. Seu objetivo é analisar um `git diff` fornecido pelo usuário, identificar problemas e sugerir melhorias claras e acionáveis.
+
+## Instruções de Execução (Para o Copiloto)
+
+**IMPORTANTE:** O usuário fornecerá o nome de uma branch como argumento. Você deve primeiro gerar o relatório de diff antes de analisá-lo.
+
+1.  **Execute o Script de Relatório:**
+    Execute o script de relatório para gerar o diff. O comando (a partir da raiz do projeto) é:
+    `{SCRIPT_COMMAND_PLACEHOLDER}`
+
+2.  **Localize o Relatório:** O script acima salvará um arquivo em `./diffs/relatorio_diff_<nome-da-branch-formatado>.md`.
+
+3.  **Analise o Conteúdo:** Leia e analise o conteúdo completo desse arquivo `.md`. O diff estará dentro dele.
+
+4.  **Forneça a Revisão:** Com base no diff, forneça sua revisão de código seguindo os critérios abaixo.
+
+5.  **Limpeza (Opcional):** Após a revisão, você pode sugerir a remoção do arquivo de diff gerado para manter o repositório limpo.
+
+---
+
+## Critérios de Revisão de Código
+
+Por favor, analise o diff fornecido e estruture seu feedback abordando os seguintes pontos:
+
+### 1. Visão Geral
+* (Forneça um breve resumo das mudanças: O que esta branch parece estar fazendo?)
+
+### 2. Qualidade e Legibilidade
+* **Clareza:** O código é fácil de entender?
+* **Nomenclatura:** Nomes de variáveis, funções e classes são claros e descritivos?
+* **Complexidade:** Existem funções ou métodos excessivamente longos ou complexos (alta complexidade ciclomática)? Sugira refatorações se necessário.
+
+### 3. Funcionalidade e Lógica
+* **Bugs Potenciais:** Você identifica alguma lógica falha, condição de borda (edge case) não tratada ou potencial para `null reference` / `undefined`?
+* **Eficiência:** Existem loops ineficientes, consultas desnecessárias ao banco de dados ou problemas de performance óbvios?
+
+### 4. Boas Práticas e Princípios
+* **SOLID/DRY:** O código segue princípios como DRY (Don't Repeat Yourself) e SOLID?
+* **Segurança:** Alguma alteração introduz vulnerabilidades óbvias (ex: SQL Injection, XSS, exposição de chaves)?
+* **Testabilidade:** As mudanças são fáceis de testar? O código de teste (se incluído no diff) é adequado?
+
+### 5. Consistência de Estilo
+* O código segue o estilo (linting) e os padrões do restante do projeto (visíveis no diff)?
+
+### 6. Sugestões e Comentários
+* (Liste pontos específicos de melhoria, referenciando o arquivo e a linha, se possível.)
+
+## Exemplo de Resposta (Após a execução do script)
+
+```markdown
+(Conteúdo do arquivo `relatorio_diff_feature-xyz.md` carregado e analisado)
+
+---
+
+## Revisão de Código: `feature-xyz`
+
+### 1. Visão Geral
+Esta branch parece adicionar um novo endpoint de API para `/users/{id}` e refatorar o serviço de autenticação.
+
+### 2. Qualidade e Legibilidade
+* **Clareza:** Boa.
+* **Nomenclatura:** `src/services/auth.py` -> A função `handle_user_data` poderia ser renomeada para `process_user_login`, pois parece ser mais específica.
+
+### 3. Funcionalidade e Lógica
+* **Bug Potencial:** `src/api/endpoints.py`, Linha 42: O `if user:` não trata o caso de `user` ser encontrado mas estar inativo. Devemos verificar `if user and user.is_active:`.
+
+... (etc)
+```
+
+## Input do Usuário (Nome da Branch)
 ```text
 $ARGUMENTS
 ```
 
-## Code Review
-Por favor, realize uma revisão de código detalhada para as alterações fornecidas no input (que é um git diff).
-Verifique os seguintes aspectos:
-1. **Qualidade do Código**: O código segue as melhores práticas? Está limpo e legível?
-2. **Consistência**: O código é consistente com o estilo do projeto?
-3. **Funcionalidade**: Há bugs ou problemas potenciais de lógica?
-4. **Desempenho**: O código é eficiente?
-5. **Segurança**: Existem vulnerabilidades ou riscos?
-6. **SOLID**: Segue princípios de design orientado a objetos?
-
-Etapas de execução sugeridas:
-1. Analise o diff fornecido.
-2. Forneça feedback detalhado e construtivo.
-3. Se tudo estiver perfeito, aprove.
-
+## Resposta da IA (Inicie aqui)
 ```text
-$FEEDBACK
+(Primeiro, execute o script para gerar o diff...)
+(Depois, forneça a análise...)
 ```
 """
 
@@ -495,17 +553,32 @@ def init(
             script_path = script_dir / "git-relatorio.sh"
             content = SCRIPT_CONTENT_SH
             create_file(script_path, content, tracker, "script", make_executable=True)
+            
+            # Define o comando dinâmico para o prompt (relativo ao root_path)
+            rel_script_path = script_path.relative_to(root_path)
+            script_command = f"./{rel_script_path.as_posix()} <nome-da-branch-fornecida>"
         else:
             script_path = script_dir / "git-relatorio.ps1"
             content = SCRIPT_CONTENT_PS
             create_file(script_path, content, tracker, "script", make_executable=False)
+            
+            # Define o comando dinâmico para o prompt (relativo ao root_path)
+            rel_script_path = script_path.relative_to(root_path)
+            # Usa as_posix() para garantir / mas prefixa com .\, pois o prompt é para Windows
+            script_command = f".\\{rel_script_path.as_posix().replace('/', '\\')} <nome-da-branch-fornecida>"
 
         time.sleep(0.3)
 
         # Passo 3: Prompt
         prompt_filename = "code_review.prompt.md"
         prompt_path = prompt_dir / prompt_filename
-        create_file(prompt_path, PROMPT_CONTENT, tracker, "prompt")
+        
+        # Gera o conteúdo do prompt dinamicamente
+        final_prompt_content = PROMPT_CONTENT_TEMPLATE.format(
+            SCRIPT_COMMAND_PLACEHOLDER=script_command
+        )
+        
+        create_file(prompt_path, final_prompt_content, tracker, "prompt")
 
     # Sumário Final
     console.print("\n[bold green]✨ Ambiente pronto![/bold green]")
@@ -514,6 +587,7 @@ def init(
     rel_prompt = prompt_path.relative_to(root_path)
     
     # Define o comando de execução baseado no SO/script
+    # Correção: A lógica do prefixo foi movida para fora do f-string para evitar o SyntaxError com '\'
     prefix = "./" if selected_script == "sh" else ".\\"
     run_command = f"{prefix}{rel_script} feature-branch"
 
