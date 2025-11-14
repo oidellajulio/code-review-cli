@@ -117,7 +117,7 @@ echo "🔄 Processando alterações entre '$BRANCH_BASE' e '$BRANCH_ALVO'..."
     echo "## 💻 Detalhes do Código (Diff)"
     echo ""
     echo "\`\`\`diff"
-    git diff "$BRANCH_BASE"..."$BRANCH_ALVO"
+    git diff "$BRANCH_BASE"..."$BRANCH_ALVO" | grep -v '^-[^-]'
     echo "\`\`\`"
 } > "$ARQUIVO_SAIDA"
 
@@ -178,7 +178,7 @@ try {
     $Content += "## 💻 Detalhes do Código (Diff)"
     $Content += ""
     $Content += "```diff"
-    $Content += (git diff "$BranchBase...$BranchAlvo")
+    $Content += (git diff "$BranchBase...$BranchAlvo") -notmatch '^-[^-]'
     $Content += "```"
 
     $Content | Out-File -FilePath $ArquivoSaida -Encoding utf8
