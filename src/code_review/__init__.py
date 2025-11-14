@@ -253,7 +253,7 @@ Por favor, analise o diff fornecido e estruture seu feedback abordando os seguin
 ## Revisão de Código: `feature-xyz`
 
 ### 1. Visão Geral
-Esta branch parece adicionar um novo endpoint de API para `/users/{id}` e refatorar o serviço de autenticação.
+Esta branch parece adicionar um novo endpoint de API para `/users/{{id}}` e refatorar o serviço de autenticação.
 
 ### 2. Qualidade e Legibilidade
 * **Clareza:** Boa.
