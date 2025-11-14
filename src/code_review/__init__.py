@@ -564,8 +564,12 @@ def init(
             
             # Define o comando dinâmico para o prompt (relativo ao root_path)
             rel_script_path = script_path.relative_to(root_path)
-            # Usa as_posix() para garantir / mas prefixa com .\, pois o prompt é para Windows
-            script_command = f".\\{rel_script_path.as_posix().replace('/', '\\')} <nome-da-branch-fornecida>"
+            
+            # Correção: Monta o comando do PowerShell fora do f-string para evitar erro de '\'
+            # Primeiro, obtém o caminho formatado para Windows
+            script_path_str = rel_script_path.as_posix().replace('/', '\\')
+            # Então, insere a string simples no f-string
+            script_command = f".\\{script_path_str} <nome-da-branch-fornecida>"
 
         time.sleep(0.3)
 
