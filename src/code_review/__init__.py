@@ -108,16 +108,16 @@ echo "🔄 Processando alterações entre '$BRANCH_BASE' e '$BRANCH_ALVO'..."
     echo ""
     echo "## 📂 Arquivos Alterados"
     echo ""
-    git diff --name-only "$BRANCH_BASE".."$BRANCH_ALVO" | sed 's/^/- /'
+    git diff --name-only "origin/$BRANCH_BASE".."$BRANCH_ALVO" -- . ':(exclude)*.md' | sed 's/^/- /'
     echo ""
     echo "## 📝 Histórico de Commits"
     echo ""
-    git log --no-merges --oneline "$BRANCH_BASE".."$BRANCH_ALVO" | sed 's/^/- /'
+    git log --no-merges --oneline "origin/$BRANCH_BASE".."$BRANCH_ALVO" | sed 's/^/- /'
     echo ""
     echo "## 💻 Detalhes do Código (Diff)"
     echo ""
     echo "\`\`\`diff"
-    git diff "$BRANCH_BASE"..."$BRANCH_ALVO" | grep -v '^-[^-]'
+    git diff "origin/$BRANCH_BASE"..."$BRANCH_ALVO" -- . ':(exclude)*.md' | grep -v '^-[^-]'
     echo "\`\`\`"
 } > "$ARQUIVO_SAIDA"
 
@@ -169,16 +169,16 @@ try {
     $Content += ""
     $Content += "## 📂 Arquivos Alterados"
     $Content += ""
-    $Content += (git diff --name-only "$BranchBase..$BranchAlvo") -replace '^', '- '
+    $Content += (git diff --name-only "origin/$BranchBase..$BranchAlvo" -- . ':(exclude)*.md') -replace '^', '- '
     $Content += ""
     $Content += "## 📝 Histórico de Commits"
     $Content += ""
-    $Content += (git log --no-merges --oneline "$BranchBase..$BranchAlvo") -replace '^', '- '
+    $Content += (git log --no-merges --oneline "origin/$BranchBase..$BranchAlvo") -replace '^', '- '
     $Content += ""
     $Content += "## 💻 Detalhes do Código (Diff)"
     $Content += ""
     $Content += "```diff"
-    $Content += (git diff "$BranchBase...$BranchAlvo") -notmatch '^-[^-]'
+    $Content += (git diff "origin/$BranchBase...$BranchAlvo" -- . ':(exclude)*.md') -notmatch '^-[^-]'
     $Content += "```"
 
     $Content | Out-File -FilePath $ArquivoSaida -Encoding utf8
