@@ -1,99 +1,130 @@
-🌟 Code Review CLI (Multi-Agente e Cross-Platform)
+# 🤖 Review CLI: Seu Assistente Pessoal de Code Review
 
-Uma ferramenta de linha de comando leve e eficiente para inicializar o ambiente de Code Review Assistido por IA (AI-Assisted Code Review) em seus projetos Git.
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![Install with uv](https://img.shields.io/badge/install%20with-uv-purple)](https://github.com/astral-sh/uv)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Este CLI configura automaticamente os scripts de git diff e os prompts necessários, padronizando a geração de relatórios de alterações para análise de código, agora com suporte para múltiplos Agentes de IA (Copilot, Claude, Gemini, etc.) e múltiplos Sistemas Operacionais (Linux, Mac e Windows).
+> **Cansado de copiar e colar `git diff` no chat do seu Copilot ou Claude?**
 
-✨ Funcionalidades
+O **Review CLI** é uma ferramenta simples que prepara seu projeto para automatizar o Code Review (Revisão de Código) assistido por IA.
 
-Inicialização Rápida: Configura a estrutura de pastas e arquivos com um único comando (review-cli init).
+---
 
-Seleção de Agente de IA: Permite escolher para qual agente o prompt será gerado (Copilot, Claude, Gemini, Cursor, etc.), salvando na pasta correta (.github/, .claude/, etc.).
+## 🧐 O Problema que Resolvemos
 
-Suporte Cross-Platform:
+Fazer revisão de código é essencial, mas é um processo manual. Se você usa uma IA (como GitHub Copilot, Claude, Gemini, etc.) para ajudar, seu dia-a-dia provavelmente se parece com isso:
 
-Linux/Mac: Gera um script .sh (Bash).
+1.  Abrir o terminal.
+2.  Digitar `git diff main...minha-branch`.
+3.  Copiar *tooodo* o resultado.
+4.  Ir para a janela da IA, colar o código e escrever um prompt pedindo a revisão.
+5.  Repetir isso para cada pequena atualização.
 
-Windows: Gera um script .ps1 (PowerShell) equivalente.
+❌ **É um processo chato e demorado.**
 
-Seleção Interativa: Se nenhum agente ou script for especificado, a ferramenta oferece um menu interativo (com setas) para seleção.
+---
 
-Geração de Script de Diff: Cria scripts (git-relatorio.sh ou git-relatorio.ps1) que geram relatórios Markdown detalhados das alterações entre branches (branch vs main).
+## ✨ A Solução: `review-cli`
 
-Saída Organizada: O script de relatório salva todos os arquivos gerados em um diretório centralizado (./diffs/), relativo à raiz do projeto.
+O **Review CLI** é uma ferramenta que você roda **apenas uma vez** no seu projeto para configurar tudo.
 
-🚀 Instalação e Uso
+Ele instala os scripts e os prompts exatos que sua IA precisa. Depois de configurado, seu novo fluxo de trabalho será:
 
-1. Pré-requisitos
+1.  **Abra o chat da sua IA** (Copilot, Claude, etc.).
+2.  **Ative o prompt** que o `review-cli` criou (ex: `.github/prompts/code_review.prompt.md`).
+3.  **Dê o nome da sua branch** (ex: `feature/nova-api`).
 
-Python: 3.11+
+A IA irá **executar o script por você**, ler o relatório e fornecer a revisão completa.
 
-Git: Instalado e configurado.
+✅ **Chega de copiar e colar!**
 
-uv (Recomendado para instalação)
+---
 
-2. Instalação (com uv)
+## 🚀 Guia Rápido: Do Zero à Revisão em 3 Passos
 
-# Instale como uma ferramenta global
-uv tool install git+[https://github.com/oidellajulio/code-review-cli.git](https://github.com/oidellajulio/code-review-cli.git)
+Vamos configurar seu primeiro projeto.
 
-# (Se estiver testando localmente, após clonar)
-# uv pip install -e .
+### Passo 1: Instale a Ferramenta
 
+Recomendamos usar o `uv` (um instalador rápido de Python). Se você não o tem, [instale-o aqui](https://github.com/astral-sh/uv).
 
-3. Uso
+```bash
+# Instale o review-cli globalmente
+uv tool install review-cli --from git+https://github.com/oidellajulio/code-review-cli.git
+````
 
-Navegue até a raiz de qualquer projeto Git e execute o comando de inicialização:
+### Passo 2: Configure seu Projeto (o `init`)
 
+Navegue até a pasta raiz do seu projeto Git e execute:
+
+```bash
 review-cli init
+```
 
+A ferramenta fará duas perguntas simples (você pode navegar com as setas):
 
-A ferramenta irá perguntar:
+**1. Qual Assistente de IA você usa?** (Isso decide onde salvar o prompt).
 
-Qual Assistente de IA você usa? (ex: copilot)
+```text
+? Escolha seu Assistente de IA: (Use setas)
+▶ copilot (GitHub Copilot)
+  claude (Claude Code)
+  gemini (Gemini CLI)
+  cursor (Cursor (IDE))
+  ...
+```
 
-Qual o formato de Script? (ex: sh ou ps, com detecção automática do seu SO)
+**2. Qual o formato do Script?** (Isso detecta seu sistema operacional).
 
-Uso com Flags (Não-interativo)
+```text
+? Escolha o Formato do Script: (Use setas)
+  sh (POSIX Shell (Bash/Zsh) - Linux/Mac)
+▶ ps (PowerShell - Windows)
+```
 
-Você pode pular as perguntas fornecendo as flags:
+### Passo 3: Peça a Revisão à IA (A Mágica 🪄)
 
-# Configurar para GitHub Copilot e scripts Bash
-review-cli init --ai copilot --script sh
+Você **não precisa** executar o script manualmente. O prompt que o `review-cli` gerou já ensina a IA a fazer isso.
 
-# Configurar para Claude e scripts PowerShell (Windows)
-review-cli init --ai claude --script ps
+1.  Abra o arquivo de prompt que o `init` criou (ex: `.github/prompts/code_review.prompt.md`).
+2.  No seu chat de IA (Copilot, Claude, etc.), ative o prompt (geralmente com `/` ou `@`).
+3.  Quando a IA pedir os argumentos, apenas forneça o nome da sua branch: `feature/login`.
 
+> A IA irá ler o prompt, **executar o script (`.sh` ou `.ps1`) por conta própria**, ler o arquivo `.md` gerado na pasta `diffs/` e fornecer a análise detalhada.
 
-4. Gerar o Relatório de Diff
+-----
 
-Após a inicialização, execute o script gerado, passando o nome da sua branch:
+## ⚙️ O que ele cria?
 
-No Linux/Mac (Bash):
+O comando `init` é seguro e não bagunça seu projeto. Ele apenas adiciona:
 
-# Exemplo: Gerar relatório da branch 'feature/nova-api'
-./.code_review/scripts/git-relatorio.sh feature/nova-api
-
-
-No Windows (PowerShell):
-
-# Exemplo: Gerar relatório da branch 'feature/nova-api'
-# (Pode precisar ajustar a política de execução: Set-ExecutionPolicy RemoteSigned)
-.\.code_review\scripts\git-relatorio.ps1 feature/nova-api
-
-
-O relatório será salvo em ./diffs/relatorio_diff_feature-nova-api.md.
-
-5. Estrutura Gerada
-
-O comando init (ex: com copilot e sh) cria:
-
+```text
 seu-projeto/
+│
 ├── .code_review/
 │   └── scripts/
 │       └── git-relatorio.sh  <-- (Ou .ps1 para Windows)
+│
 ├── .github/
 │   └── prompts/
 │       └── code_review.prompt.md  <-- (Ou .claude/prompts/, etc.)
+│
 └── diffs/
-    └── (Relatórios aparecerão aqui após executar o script)
+    └── (Aqui é onde os relatórios .md aparecerão)
+```
+
+-----
+
+## 🖥️ Recursos Principais
+
+| Recurso | Descrição |
+| :--- | :--- |
+| **🤖 Seleção de Agente** | Salva os prompts nos diretórios corretos que cada agente espera (`.github/`, `.claude/`, `.gemini/`, etc.). |
+| **💻 Cross-Platform** | Gera scripts `.sh` (Bash) para Linux/Mac e `.ps1` (PowerShell) para Windows. |
+| **🖱️ Interativo** | Menus fáceis de usar com detecção automática do seu Sistema Operacional. |
+| **📝 Prompts Detalhados** | O prompt gerado instrui a IA a fazer uma análise de alta qualidade, verificando segurança, performance, bugs e boas práticas. |
+
+-----
+
+[Reportar Bug](https://www.google.com/search?q=https://github.com/oidellajulio/code-review-cli/issues) • [Contribuir](https://www.google.com/search?q=https://github.com/oidellajulio/code-review-cli/pulls)
+
