@@ -186,7 +186,7 @@ if (-not $NomeArquivoSafe) {{
     $NomeArquivoSafe = "branch"
 }}
 
-$ArquivoSaida = Join-Path $DirSaida ("relatorio_diff_{0}.md" -f $NomeArquivoSafe)
+$ArquivoSaida = Join-Path $DirSaida ("relatorio_diff_{{0}}.md" -f $NomeArquivoSafe)
 
 Write-Host "{LOG_PROCESSING}: base=$BranchBase alvo=$BranchAlvo" -ForegroundColor Yellow
 
