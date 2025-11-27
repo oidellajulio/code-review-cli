@@ -50,7 +50,7 @@ Recomendamos usar o `uv` (um instalador rápido de Python). Se você não o tem,
 
 ```bash
 # Instale o review-cli globalmente
-uv tool install review-cli --from git+https://github.com/oidellajulio/code-review-cli.git
+uv tool install review-cli --from git+https://github.com/juliooidella/code-review-cli.git
 ````
 
 ### Passo 2: Configure seu Projeto (o `init`)
@@ -132,4 +132,4 @@ Esses arquivos são tratados de forma idempotente — se você rodar o `init` no
 
 -----
 
-[Reportar Bug](https://www.google.com/search?q=https://github.com/oidellajulio/code-review-cli/issues) • [Contribuir](https://www.google.com/search?q=https://github.com/oidellajulio/code-review-cli/pulls)
+[Reportar Bug](https://www.google.com/search?q=https://github.com/juliooidella/code-review-cli/issues) • [Contribuir](https://www.google.com/search?q=https://github.com/juliooidella/code-review-cli/pulls)
