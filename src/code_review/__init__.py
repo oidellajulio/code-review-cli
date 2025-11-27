@@ -673,7 +673,13 @@ def init(
 
         # Passo 3: Prompt
         prompt_filename = "code_review.prompt.md"
+
+        if selected_ai == "antigravity":
+            prompt_filename = "code_review.md"
+            
         prompt_path = prompt_dir / prompt_filename
+
+
         
         # Gera o conteúdo do prompt dinamicamente
         final_prompt_content = PROMPT_CONTENT_TEMPLATE.format(
